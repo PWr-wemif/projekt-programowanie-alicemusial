@@ -1,7 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
+from app.routers.project import project
 
 app = FastAPI()
+app.include_router(project)
 
 
 @app.get('/')
