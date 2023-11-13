@@ -7,5 +7,5 @@ class User(BaseModel):
     password: str
     username: str
     avatar: str
-    user_projects: []UserProject
+    user_projects: [UserProject]
 

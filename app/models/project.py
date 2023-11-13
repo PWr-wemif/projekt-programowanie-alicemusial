@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Project(BaseModel):
     id: int
-    user_id: int
-    title: str
-    description: str | None = None
-    pattern_url: str
+    user_id: int = Field(...)
+    title: str = Field(...)
+    description: str = Field(...)
+    pattern_url: str = Field(...)
     materials: None
