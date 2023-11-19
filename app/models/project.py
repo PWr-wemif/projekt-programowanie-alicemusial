@@ -4,13 +4,15 @@ from typing import Optional, List
 from typing_extensions import Annotated
 from bson import ObjectId
 
+PyObjectId = Annotated[str, BeforeValidator(str)]
+
 
 class Project(BaseModel):
-    id: Optional[ObjectId] = Field(alias="_id", default=None)
-    user_id: int = Field(...)
-    title: str = Field(...)
-    description: str = Field(...)
-    pattern_url: str = Field(...)
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    user_id: int
+    title: str
+    description: str
+    pattern_url: str
     materials: List[int]
     model_config = ConfigDict(
         populate_by_name=True,
