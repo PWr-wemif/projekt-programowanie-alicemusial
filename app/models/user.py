@@ -13,7 +13,7 @@ class User(BaseModel):
     password: str = Field(..., min_length=6)
     username: str = Field(..., min_length=6, unique=True)
     avatar: str
-    user_projects: List[UserProject]
+    user_projects: List[int]
     model_config = ConfigDict(
         populate_by_name=True,
         arbitrary_types_allowed=True,
@@ -34,7 +34,7 @@ class UpdateUser(BaseModel):
     password: Optional[str] = None
     username: Optional[str] = None
     avatar: Optional[str] = None
-    user_projects: Optional[List[UserProject]] = None
+    user_projects: Optional[List[int]] = None
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
         json_encoders={ObjectId: str},
@@ -49,3 +49,10 @@ class UpdateUser(BaseModel):
         },
     )
 
+
+class NewUser(BaseModel):
+    id: Optional[int] = None
+    password: Optional[str] = None
+    username: Optional[str] = None
+    avatar: Optional[str] = None
+    user_projects: Optional[List[int]] = None
