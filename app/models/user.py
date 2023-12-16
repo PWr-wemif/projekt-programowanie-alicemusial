@@ -50,9 +50,16 @@ class UpdateUser(BaseModel):
     )
 
 
-class NewUser(BaseModel):
+class Login(BaseModel):
     id: Optional[int] = None
     password: Optional[str] = None
     username: Optional[str] = None
-    avatar: Optional[str] = None
-    user_projects: Optional[List[int]] = None
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
