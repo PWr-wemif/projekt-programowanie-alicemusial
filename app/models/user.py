@@ -12,7 +12,6 @@ class User(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     password: str = Field(..., min_length=6)
     username: str = Field(..., min_length=6, unique=True)
-    avatar: str
     user_projects: List[int]
     model_config = ConfigDict(
         populate_by_name=True,
@@ -22,7 +21,6 @@ class User(BaseModel):
                 "id": 1,
                 "password": "password123",
                 "username": "testuser",
-                "avatar": "avatar.jpg",
                 "user_projects": [1, 2, 3],
             }
         },
@@ -33,7 +31,6 @@ class UpdateUser(BaseModel):
     id: Optional[int] = None
     password: Optional[str] = None
     username: Optional[str] = None
-    avatar: Optional[str] = None
     user_projects: Optional[List[int]] = None
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -43,7 +40,6 @@ class UpdateUser(BaseModel):
                 "id": 1,
                 "password": "password123",
                 "username": "testuser",
-                "avatar": "avatar.jpg",
                 "user_projects": [1, 2, 3],
             }
         },

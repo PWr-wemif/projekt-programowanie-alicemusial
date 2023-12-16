@@ -1,10 +1,8 @@
 from app.models.user import User
 from app.auth.hashing import Hash
-from fastapi import APIRouter, HTTPException, Depends, Request, status
-from app.auth.oauth import get_current_user
+from fastapi import APIRouter, HTTPException, Depends, status
 from app.auth.jwttoken import create_access_token
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.middleware.cors import CORSMiddleware
 import motor.motor_asyncio
 
 DATABASE_URL = "mongodb://localhost:27017"
@@ -21,21 +19,13 @@ user_router = APIRouter(
     prefix="/user"
 )
 
-user_router.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 @user_router.post('/register')
 def create_user(request: User):
     hashed_pass = Hash.bcrypt(request.password)
     user_object = dict(request)
     user_object["password"] = hashed_pass
-    user_id = db["users"].insert(user_object)
+    user_id = db["users"].insert(request.id)
     return {"res": "created"}
 
 
