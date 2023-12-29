@@ -1,28 +1,26 @@
-import { useState } from 'react'
-import './App.css'
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./pages/Layout";
+import Login from "./pages/Login";
+import Home from "./pages/Home"
+import Profile from "./pages/Profile";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
 
-      </div>
+          <Route path="login" element={<Login />} />
+          <Route path="profile" element={<Profile />}/>
 
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
