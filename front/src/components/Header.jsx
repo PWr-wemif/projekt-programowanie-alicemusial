@@ -13,7 +13,12 @@ export default function Header() {
         }}>
             <UnprotectedComponent>
                 <Group gap='sm'>
-                    <Button variant="outline" radius="xl">Register</Button>
+                    <Link to="/register">   
+                        <Button variant="outline" radius="xl">
+                            Register
+                        </Button>
+                    </Link>
+
                     <Link to="/login">
                         <Button radius="xl" >
                             Log in
