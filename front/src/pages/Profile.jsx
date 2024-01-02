@@ -1,4 +1,6 @@
-import {Title, Button, Space,Avatar} from "@mantine/core";
+import {Title, Button, Space,Avatar, ActionIcon} from "@mantine/core";
+import {IconHome} from '@tabler/icons-react';
+import { Link } from "react-router-dom";
 
 const Profile = () => {
 
@@ -7,7 +9,12 @@ const Profile = () => {
     <>
         <Space h="lg" />
 
-        <Avatar variant="light" src={null} alt="no image here" color="#c6c8ce" justify="right"/>
+        <Link to="/">
+            <ActionIcon variant="light" aria-label="Home page">
+                <IconHome style={{ width: '70%', height: '70%' }} stroke={1.5} />
+            </ActionIcon>
+        </Link>
+        
 
         <Title order={1} c="#474e66" ta="center" >Account & tools</Title>
 
@@ -16,7 +23,15 @@ const Profile = () => {
         <Title order={3} c="#555a72">Your profile</Title>
 
         <Button.Group orientation="vertical" gap='sm'>
-            <Button fullWidth justify="center" c="BlueGray" variant="default" size="xl">Change profile picture</Button>
+            <Button 
+              fullWidth 
+              justify="center" 
+              c="BlueGray" 
+              variant="default" 
+              size="xl"
+              leftSection={<Avatar variant="light" src={null} alt="no image here" color="#c6c8ce" />}
+            >
+              Change profile picture</Button>
         </Button.Group>
 
         <Space h="lg" />
