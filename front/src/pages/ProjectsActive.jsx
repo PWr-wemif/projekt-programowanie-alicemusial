@@ -1,13 +1,23 @@
-import {ActionIcon, Space, Title, Group, Button} from "@mantine/core";
+import {ActionIcon, Avatar, Space, Title, Group, Button, Modal, TextInput, FileInput, Textarea} from "@mantine/core";
+import { useDisclosure } from '@mantine/hooks';
 import {IconHome} from '@tabler/icons-react';
 import { Link } from "react-router-dom";
 
 
+
 const ProjectsActive = () => {
+
+  const [opened, { open, close }] = useDisclosure(false);
 
 
     return (
       <>
+        <Space h="xs" />
+
+        <Link to="/profile">
+            <Avatar variant="light" src={null} alt="no image here" color="#c6c8ce" />
+        </Link>
+        
         <Space h="xs" />
 
         <Link to="/">
@@ -32,6 +42,34 @@ const ProjectsActive = () => {
           </Link>
            
         </Group>
+
+        <Space h="xl" />
+
+        <Modal opened={opened} onClose={close} title="Add new project" centered>
+        {
+          <div>
+            
+            <TextInput required label="Name" placeholder="Project" />
+            <Textarea
+              label="Description"
+              placeholder="Describe your project"
+            />
+           
+
+            <FileInput
+              variant="filled"
+              radius="md"
+              label="Pattern file"
+              description="Upload your pattern"
+              placeholder="pattern.pdf"
+            />
+          </div>
+        }
+        </Modal>
+        <Group justify="center">
+          <Button radius="xl" onClick={open}>Add new project</Button>
+        </Group>
+     
           
       </>
     )

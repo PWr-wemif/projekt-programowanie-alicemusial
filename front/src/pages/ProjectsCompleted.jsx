@@ -1,4 +1,4 @@
-import {ActionIcon, Space, Title,Group, Button} from "@mantine/core";
+import {ActionIcon, Avatar, Space, Title,Group, Button} from "@mantine/core";
 import {IconHome} from '@tabler/icons-react';
 import { Link } from "react-router-dom";
 
@@ -8,6 +8,12 @@ const ProjectsActive = () => {
 
     return (
       <>
+        <Space h="xs" />
+
+        <Link to="/profile">
+            <Avatar variant="light" src={null} alt="no image here" color="#c6c8ce" />
+        </Link>
+        
         <Space h="xs" />
 
         <Link to="/">
