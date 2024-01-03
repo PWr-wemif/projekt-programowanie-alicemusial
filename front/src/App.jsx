@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import ProjectsActive from "./pages/ProjectsActive";
 import ProjectsPlanned from "./pages/ProjectsPlanned";
 import ProjectsCompleted from "./pages/ProjectsCompleted";
+import YarnStash from "./pages/YarnStash";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="profile/projects/active" element={<ProjectsActive/>}/>
           <Route path="profile/projects/planned" element={<ProjectsPlanned/>}/>
           <Route path="profile/projects/completed" element={<ProjectsCompleted/>}/>
+          <Route path="profile/yarn-stash" element={<YarnStash/>}/>
 
 
         </Route>
