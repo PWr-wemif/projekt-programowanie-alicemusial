@@ -58,8 +58,9 @@ const ProjectsPlanned = () => {
               variant="filled"
               radius="md"
               label="Pattern file"
-              description="Upload your pattern"
+              description="Upload png, jpeg or pdf file"
               placeholder="pattern.pdf"
+              accept="image/png,image/jpeg,application/pdf"
             />
           </div>
         }
