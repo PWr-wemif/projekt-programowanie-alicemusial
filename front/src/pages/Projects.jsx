@@ -1,14 +1,19 @@
-import {ActionIcon, Avatar, Space, Title, Group, Button, Modal, TextInput, FileInput, Textarea} from "@mantine/core";
+import {ActionIcon, Avatar, Space, Title,Group, Button, Modal, TextInput, FileInput, Textarea} from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import {IconHome} from '@tabler/icons-react';
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 
+const Projects = () => {
 
-const ProjectsActive = () => {
+    const [opened, { open, close }] = useDisclosure(false);
 
-  const [opened, { open, close }] = useDisclosure(false);
+    const [selectedStatus, setSelectedStatus] = useState('active');
 
+    const handleSelectStatus = (status) => {
+        setSelectedStatus(status);
+    }
 
     return (
       <>
@@ -31,16 +36,25 @@ const ProjectsActive = () => {
         <Space h="xs" />
 
         <Group justify="center" gap="md">
-          <Link to="/profile/projects/planned">
-            <Button variant="light" grow>Planned</Button>
-          </Link>
           
-          <Button variant="filled" >Active</Button>
+          <Button 
+            variant={selectedStatus === 'planned' ? 'filled' : 'light'}
+            onClick={() => handleSelectStatus('planned')}>
+              Planned
+          </Button>
 
-          <Link to="/profile/projects/completed">
-            <Button variant="light">Completed</Button>
-          </Link>
-           
+          <Button 
+            variant={selectedStatus === 'active' ? 'filled' : 'light'}
+            onClick={() => handleSelectStatus('active')}>
+              Active
+          </Button>
+
+          <Button 
+            variant={selectedStatus === 'completed' ? 'filled' : 'light'}
+            onClick={() => handleSelectStatus('completed')}>
+              Completed
+          </Button>
+            
         </Group>
 
         <Space h="xl" />
@@ -61,19 +75,18 @@ const ProjectsActive = () => {
               radius="md"
               label="Pattern file"
               description="Upload png, jpeg or pdf file"
-              placeholder="Your pattern"
+              placeholder="pattern.pdf"
               accept="image/png,image/jpeg,application/pdf"
             />
           </div>
         }
         </Modal>
         <Group justify="center">
-          <Button radius="xl" onClick={open}>Add new project</Button>
+            <Button radius="xl" onClick={open}>Add new project</Button>
         </Group>
-     
           
       </>
     )
   };
   
-  export default ProjectsActive;
+  export default Projects;

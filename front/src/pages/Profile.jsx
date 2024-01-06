@@ -41,7 +41,7 @@ const Profile = () => {
         <Space h="lg" />
 
         <Button.Group orientation="vertical" gap='sm'>
-          <Link to="/profile/projects/active">
+          <Link to="/profile/projects">
             <Button fullWidth justify="center" c="BlueGray" variant="default" size="xl">Projects</Button>
           </Link>
 

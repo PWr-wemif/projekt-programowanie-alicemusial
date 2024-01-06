@@ -5,9 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import ProjectsActive from "./pages/ProjectsActive";
-import ProjectsPlanned from "./pages/ProjectsPlanned";
-import ProjectsCompleted from "./pages/ProjectsCompleted";
+import Projects from "./pages/Projects";
 import YarnStash from "./pages/YarnStash";
 
 export default function App() {
@@ -20,9 +18,7 @@ export default function App() {
           <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />}/>
           <Route path="register" element={<Register />}/>
-          <Route path="profile/projects/active" element={<ProjectsActive/>}/>
-          <Route path="profile/projects/planned" element={<ProjectsPlanned/>}/>
-          <Route path="profile/projects/completed" element={<ProjectsCompleted/>}/>
+          <Route path="profile/projects" element={<Projects/>}/>
           <Route path="profile/yarn-stash" element={<YarnStash/>}/>
 
 

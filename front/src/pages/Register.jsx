@@ -11,12 +11,13 @@ import {
 const Register = () => {
     const form = useForm({
       initialValues: {
-        username: '',
+        email: '',
         password: '',
         terms: true,
       },
   
       validate: {
+        email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
         password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
       },
     });
@@ -28,11 +29,11 @@ const Register = () => {
 
         <TextInput
             required
-            label="Username"
-            placeholder="Joe"
-            value={form.values.username}
-            onChange={(event) => form.setFieldValue('username', event.currentTarget.value)}
-            error={form.errors.email && 'Invalid username'}
+            label="Email"
+            placeholder="email@example.com"
+            value={form.values.email}
+            onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
+            error={form.errors.email && 'Invalid email'}
             radius="md"
         />
 

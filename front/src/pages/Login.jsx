@@ -29,9 +29,9 @@ const Login = () => {
 
         <TextInput
             required
-            label="Username"
-            placeholder="Joe"
-            value={form.values.username}
+            label="Email"
+            placeholder="email@example.com"
+            value={form.values.email}
             onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
             error={form.errors.email && 'Invalid email'}
             radius="md"
