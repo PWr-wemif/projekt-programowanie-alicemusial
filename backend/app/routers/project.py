@@ -1,19 +1,12 @@
-from app.models.project import Project, UpdateProject, ProjectCollection
-from fastapi import APIRouter, Body, HTTPException, status
-from fastapi.responses import Response
-from app.database.database import project_collection
-from bson import ObjectId
-from pymongo import ReturnDocument
-
+from fastapi import APIRouter, Body, status, Depends
+from app.models.project import Project, CreateProject
+from app.auth.user import current_active_user
+from beanie import PydanticObjectId
+from typing import Optional
 
 project_router = APIRouter(
     prefix="/project"
 )
-
-
-@project_router.get("/")
-def get_project() -> Project:
-    return Project(id=123, user_id=456, title="title", pattern_url="", materials=None)
 
 
 @project_router.post(
@@ -23,82 +16,46 @@ def get_project() -> Project:
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False
 )
-async def create_project(project: Project = Body(...)):
-    new_project = await project_collection.insert_one(
-        project.model_dump(by_alias=True, exclude=["id"])
+async def create_project(user=Depends(current_active_user), project: CreateProject = Body(...)):
+    project_db = Project(user_id=str(user.id), title=project.title, description=project.description,
+                         pattern_url=project.pattern_url, status=project.status, public=project.public,
+                         materials=project.materials)
+    new_project = await Project.insert_one(
+        project_db
     )
-    created_project = await project_collection.find_one(
-        {"_id": new_project.inserted_id}
-    )
-    return created_project
-
-
-@project_router.get(
-    "/",
-    response_description="List all projects",
-    response_model=ProjectCollection,
-    response_model_by_alias=False
-)
-async def list_projects():
-    projects_data = await project_collection.find().to_list(1000)
-
-    for project in projects_data:
-        try:
-            project['author_id'] = int(project['author_id'])
-        except ValueError:
-            project['author_id'] = None
-
-    return ProjectCollection(projects=projects_data)
-
-
-@project_router.get(
-    "/{id}",
-    response_description="Get a single project",
-    response_model=Project,
-    response_model_by_alias=False,
-)
-async def show_project(id: str):
-    if (
-        project := await project_collection.find_one({"_id": ObjectId(id)})
-    ) is not None:
-        return project
-
-    raise HTTPException(status_code=404, detail=f"Project {id} not found")
+    return new_project
 
 
 @project_router.put(
-    "/{id}",
-    response_description="Update a project",
-    response_model=Project,
-    response_model_by_alias=False,
+    path="/{project_id}",
+    response_model=Optional[Project],
+    status_code=status.HTTP_202_ACCEPTED
 )
-async def update_project(id: str, project: UpdateProject = Body(...)):
-    project = {
-        k: v for k, v in project.model_dump(by_alias=True).items() if v is not None
-    }
-
-    if len(project) >= 1:
-        update_result = await project_collection.find_one_and_update(
-            {"_id": ObjectId(id)},
-            {"$set": project},
-            return_document=ReturnDocument.AFTER,
-        )
-        if update_result is not None:
-            return update_result
-        else:
-            raise HTTPException(status_code=404, detail=f"Project {id} not found")
-
-    if (existing_project := await project_collection.find_one({"_id": id})) is not None:
-        return existing_project
-
-    raise HTTPException(status_code=404, detail=f"Project {id} not found")
+async def update_project(project_id: str, user=Depends(current_active_user), project: CreateProject = Body(...)):
+    current_project = await Project.find_one(Project.user_id == str(user.id),
+                                             Project.id == PydanticObjectId(project_id))
+    if current_project:
+        current_project.title = project.title
+        current_project.description = project.description
+        current_project.pattern_url = project.pattern_url
+        current_project.status = project.status
+        current_project.public = project.public
+        current_project.materials = project.materials
+        await current_project.save()
+        return current_project
+    return None
 
 
-@project_router.delete("/{id}", response_description="Delete a project")
-async def delete_project(id: str):
-    delete_result = await project_collection.delete_one({"_id": ObjectId(id)})
+@project_router.delete(
+    path="/{project_id}",
+    response_model=Optional[Project],
+    status_code=status.HTTP_202_ACCEPTED
+)
+async def delete_project(project_id: str, user=Depends(current_active_user), project: CreateProject = Body(...)):
+    project = await Project.find_one(Project.user_id == str(user.id),
+                                     Project.id == PydanticObjectId(project_id))
+    if project:
+        await project.delete()
 
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return None
 
-    raise HTTPException(status_code=404, detail=f"Project {id} not found")
