@@ -1,59 +1,79 @@
-import {Title, Button, Space,Avatar, ActionIcon} from "@mantine/core";
-import {IconHome} from '@tabler/icons-react';
-import { Link } from "react-router-dom";
+import {Title, Button, Space,Avatar, Container, Stack, Group, Divider} from "@mantine/core";
+import Header from "../components/Header";
+import { useEffect, useState } from "react";
+import Projects from "../components/Projects";
+import { userInfo } from "../api/user";
+import YarnStash from "../components/YarnStash";
 
 const Profile = () => {
+    const [selectedStatus, setSelectedStatus] = useState('Projects');
+    const [user, setUser] = useState(null);
 
+    const handleSelectStatus = (status) => {
+        setSelectedStatus(status);
+    }
 
-  return (
-    <>
-        <Space h="lg" />
-
-        <Link to="/">
-            <ActionIcon variant="light" aria-label="Home page">
-                <IconHome style={{ width: '70%', height: '70%' }} stroke={1.5} />
-            </ActionIcon>
-        </Link>
-        
-
-        <Title order={1} c="#474e66" ta="center" >Account & tools</Title>
-
-        <Space h="lg" />
-
-        <Title order={3} c="#555a72">Your profile</Title>
-
-        <Button.Group orientation="vertical" gap='sm'>
-            <Button 
-              fullWidth 
-              justify="center" 
-              c="BlueGray" 
-              variant="default" 
-              size="xl"
-              leftSection={<Avatar variant="light" src={null} alt="no image here" color="#c6c8ce" />}
-            >
-              Change profile picture</Button>
-        </Button.Group>
-
-        <Space h="lg" />
-
-        <Title order={3} c="#555a72">Tools</Title>
-
-        <Space h="lg" />
-
-        <Button.Group orientation="vertical" gap='sm'>
-          <Link to="/profile/projects">
-            <Button fullWidth justify="center" c="BlueGray" variant="default" size="xl">Projects</Button>
-          </Link>
-
-          <Link to="/profile/yarn-stash">
-            <Button fullWidth justify="center" c="BlueGray" variant="default" size="xl">Yarn stash</Button>
-          </Link>
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const userData = await userInfo();
+                setUser(userData);
+            } catch (err) {
+                console.error(err);
             
-            <Button fullWidth justify="center" c="BlueGray" variant="default" size="xl">Hook stash</Button>
-        </Button.Group>
-        
-    </>
-  )
+            }
+        };
+        fetchUserData();
+    }, [])
+
+    return (<>
+        <Header />
+
+        <Container>
+            <Space h="lg" />
+
+
+            {user && <Stack align="center">
+                
+                <Avatar size={'200px'} src={null} alt="no image here" color="#c6c8ce" />
+                
+                <Title order={2} c="#555a72">{user.username}</Title>
+            </Stack>}
+           
+            <Space h="lg" />
+
+            <Group justify="center">
+                <Button 
+                    variant={selectedStatus === 'Projects' ? 'filled' : 'subtle'}
+                    radius='lg'
+                    size='md'
+                    onClick={() => handleSelectStatus('Projects')}>
+                    Projects
+                </Button>
+                <Button 
+                    variant={selectedStatus === 'Yarn Stash' ? 'filled' : 'subtle'}
+                    size='md'
+                    radius='lg'
+                    onClick={() => handleSelectStatus('Yarn Stash')}>
+                    Yarn Stash
+                </Button>
+                <Button 
+                    variant={selectedStatus === 'Hook Stash' ? 'filled' : 'subtle'}
+                    size='md'
+                    radius='lg'
+                    onClick={() => handleSelectStatus('Hook Stash')}>
+                    Hook Stash
+                </Button>
+
+            </Group>
+            <Divider my="md" />
+
+            {selectedStatus === 'Projects' && <Projects />}
+            {selectedStatus === 'Yarn Stash' && <YarnStash />}
+        </Container>
+        </>
+    );
 };
+
 
 export default Profile;
