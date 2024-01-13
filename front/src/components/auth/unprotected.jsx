@@ -1,12 +1,8 @@
 import PropTypes from "prop-types";
-
-const useAuth = () => {
-    const isLoggedIn = false;
-    return { isLoggedIn };
-};
+import isLogged from "./isLogged";
 
 const UnprotectedComponent = ({ children }) => {
-    const { isLoggedIn } = useAuth()
+    const { isLoggedIn } = isLogged()
     if (isLoggedIn) {
         return null;
     }
