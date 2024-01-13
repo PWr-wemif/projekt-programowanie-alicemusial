@@ -1,10 +1,21 @@
-import { Avatar, Button, Group } from "@mantine/core";
+import { Button, Group, Image } from "@mantine/core";
 import { Link } from "react-router-dom";
 import UnprotectedComponent from "./auth/unprotected";
 import ProtectedComponent from "./auth/protected";
+import AvatarMenu from "./AvatarMenu";
 
 export default function Header() {
     return (<>
+        <div style={{
+            position: 'absolute',
+            top: 10,
+            left: 10, 
+            zIndex: 1
+        }}>
+        <Link to="/">
+            <Image h={90} w={90} src="./public/logo.png"/>
+        </Link>
+        </div>
         <div style={{
             position: 'absolute',
             top: 10,
@@ -27,8 +38,7 @@ export default function Header() {
                 </Group>
             </UnprotectedComponent>
             <ProtectedComponent>
-                <Avatar src={null} alt="no image here" />
-
+                <AvatarMenu />
             </ProtectedComponent>
         </div>
     </>)

@@ -1,26 +1,22 @@
-import { Container, Grid, SimpleGrid, Skeleton, rem } from '@mantine/core';
+import { Container, Grid, Image } from '@mantine/core';
 
-const PRIMARY_COL_HEIGHT = rem(300);
+
 
 export default function ProjectsGrid() {
-  const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - var(--mantine-spacing-md) / 2)`;
+  const imageCount = 15;
+
+  const imageUrls = Array.from({ length: imageCount }, (_, index) => `https://picsum.photos/200/200?random=${index}`);
 
   return (
     <Container my="md">
-      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-        <Skeleton height={PRIMARY_COL_HEIGHT} radius="md" animate={false} />
-        <Grid gutter="md">
-          <Grid.Col>
-            <Skeleton height={SECONDARY_COL_HEIGHT} radius="md" animate={false} />
+      <Grid grow gutter="sm">
+        {imageUrls.map((url, index) => (
+          <Grid.Col span={4} key={index}>
+            <Image radius='lg' src={url} alt={`Random Image ${index + 1}`} />
           </Grid.Col>
-          <Grid.Col span={6}>
-            <Skeleton height={SECONDARY_COL_HEIGHT} radius="md" animate={false} />
-          </Grid.Col>
-          <Grid.Col span={6}>
-            <Skeleton height={SECONDARY_COL_HEIGHT} radius="md" animate={false} />
-          </Grid.Col>
-        </Grid>
-      </SimpleGrid>
+        ))}
+      </Grid>
     </Container>
   );
 }
+

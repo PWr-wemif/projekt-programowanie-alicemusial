@@ -5,8 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import Projects from "./pages/Projects";
-import YarnStash from "./pages/YarnStash";
+import { ProtectedRoute } from "./components/auth/protectedRoute";
 
 export default function App() {
   return (
@@ -14,13 +13,11 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-
+          
           <Route path="login" element={<Login />} />
-          <Route path="profile" element={<Profile />}/>
           <Route path="register" element={<Register />}/>
-          <Route path="profile/projects" element={<Projects/>}/>
-          <Route path="profile/yarn-stash" element={<YarnStash/>}/>
 
+          <Route path="profile" element={<ProtectedRoute element={<Profile />} />} />
 
         </Route>
       </Routes>
