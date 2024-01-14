@@ -6,10 +6,11 @@ from app.database.database import User, db
 from app.auth.user import auth_backend, current_active_user, fastapi_users
 from app.models.user import UserCreate, UserRead, UserUpdate
 from app.models.project import Project
+from app.routers.file import file_router
 
 app = FastAPI()
 
-
+app.include_router(file_router, tags=["image"])
 app.include_router(project_router, tags=["project"])
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
@@ -19,11 +20,7 @@ app.include_router(
     prefix="/auth",
     tags=["auth"],
 )
-app.include_router(
-    fastapi_users.get_reset_password_router(),
-    prefix="/auth",
-    tags=["auth"],
-)
+
 app.include_router(
     fastapi_users.get_verify_router(UserRead),
     prefix="/auth",
@@ -36,8 +33,7 @@ app.include_router(
 )
 
 origins = [
-    "http://localhost:3000",
-    "http://localhost:8080",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
@@ -68,3 +64,5 @@ def get_status():
 @app.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello {user.email}!"}
+
+

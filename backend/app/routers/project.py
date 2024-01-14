@@ -17,8 +17,8 @@ project_router = APIRouter(
     response_model_by_alias=False
 )
 async def create_project(user=Depends(current_active_user), project: CreateProject = Body(...)):
-    project_db = Project(user_id=str(user.id), title=project.title, description=project.description,
-                         pattern_url=project.pattern_url, status=project.status, public=project.public,
+    project_db = Project(user_id=str(user.id),  title=project.title, project_image=project.project_image, description=project.description,
+                         pattern_url=project.pattern_url, public=project.public,
                          materials=project.materials)
     new_project = await Project.insert_one(
         project_db
@@ -38,7 +38,6 @@ async def update_project(project_id: str, user=Depends(current_active_user), pro
         current_project.title = project.title
         current_project.description = project.description
         current_project.pattern_url = project.pattern_url
-        current_project.status = project.status
         current_project.public = project.public
         current_project.materials = project.materials
         await current_project.save()
