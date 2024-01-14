@@ -1,4 +1,4 @@
-from app.models.project import UserProject
+from app.models.userproject import UserProject
 from fastapi import APIRouter
 
 user_project = APIRouter(
