@@ -17,8 +17,9 @@ project_router = APIRouter(
     response_model_by_alias=False
 )
 async def create_project(user=Depends(current_active_user), project: CreateProject = Body(...)):
-    project_db = Project(user_id=str(user.id),  title=project.title, project_image=project.project_image, description=project.description,
-                         pattern_url=project.pattern_url, public=project.public,
+    project_db = Project(user_id=str(user.id), title=project.title, project_image=project.project_image,
+                         description=project.description,
+                         pattern_url=project.pattern_url, is_public=project.is_public,
                          materials=project.materials)
     new_project = await Project.insert_one(
         project_db
@@ -58,3 +59,22 @@ async def delete_project(project_id: str, user=Depends(current_active_user), pro
 
     return None
 
+
+@project_router.get(
+    path="/{project_id}",
+    status_code=status.HTTP_200_OK
+)
+async def list_projects(user=Depends(current_active_user)):
+    projects_list = await Project.find(Project.user_id == str(user.id)).to_list()
+
+    return projects_list
+
+
+@project_router.get(
+    path="/{public}",
+    status_code=status.HTTP_200_OK
+)
+async def list_public_projects():
+    public_projects = await Project.find(Project.is_public == True).to_list()
+
+    return public_projects
