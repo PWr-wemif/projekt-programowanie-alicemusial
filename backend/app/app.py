@@ -7,11 +7,14 @@ from app.auth.user import auth_backend, current_active_user, fastapi_users
 from app.models.user import UserCreate, UserRead, UserUpdate
 from app.models.project import Project
 from app.routers.file import file_router
+from app.models.yarn import Yarn
+from app.routers.yarn import yarn_router
 
 app = FastAPI()
 
 app.include_router(file_router, tags=["image"])
 app.include_router(project_router, tags=["project"])
+app.include_router(yarn_router, tags=["yarn-stash"])
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
 )
@@ -51,7 +54,8 @@ async def on_startup():
         database=db,
         document_models=[
             User,
-            Project
+            Project,
+            Yarn
         ],
     )
 
