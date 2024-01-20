@@ -26,6 +26,36 @@ export const createProject = async (title, project_image, description, pattern_u
     }
 };
 
+export const deleteProject = async (_id) => {
+    try {
+      const token = Cookies.get('token');
+  
+      if (!token) {
+        throw new Error('Token not found');
+      }
+  
+      const response = await fetch(`http://127.0.0.1:8000/project/${_id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status} - ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Delete successful:', data);
+      return data;
+    } catch (error) {
+      console.error('Delete project failed', error);
+      throw error;
+    }
+  };
+  
+
 export const updateProjectData = async (_id, updatedValues) => {
     try {
       const token = Cookies.get('token');

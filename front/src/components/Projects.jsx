@@ -1,9 +1,9 @@
 import {Group, Button, Modal,  TextInput, FileInput, Textarea, Switch, Space, Grid, Image, Overlay, ActionIcon, Title, Text } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
-import { IconEye, IconEdit} from '@tabler/icons-react';
+import { IconEye, IconEdit, IconTrash} from '@tabler/icons-react';
 import { useEffect, useState } from "react";
 import { uploadFile } from "../api/file";
-import { createProject, getPrivateProjects, updateProjectData } from "../api/project";
+import { createProject, getPrivateProjects, updateProjectData, deleteProject } from "../api/project";
 import { useForm } from "@mantine/form";
 import PrivateProjectsInfo from "./PrivateProjectsInfo";
 import { addUserProject } from "../api/userproject";
@@ -133,6 +133,33 @@ export default function Projects() {
       } catch (error) {
         console.error('Edit project failed', error);
       }
+    };
+
+    const [deleteConfirmationModal, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+    const [projectToDelete, setProjectToDelete] = useState(null);
+
+    const handleDeleteProject = async () => {
+      try {
+        if (!projectToDelete || !projectToDelete._id) {
+          console.error('No project selected or project ID is missing');
+          return;
+        }
+
+        await deleteProject(projectToDelete._id);
+  
+        if (selectedStatus === 'createdByYou') {
+          fetchPrivateProjects();
+        }
+  
+        closeDeleteModal();
+      } catch (error) {
+        console.error('Error deleting project:', error);
+      }
+    };
+
+    const openDeleteConfirmationModal = (project) => {
+      setProjectToDelete(project);
+      openDeleteModal();
     };
 
 
@@ -289,70 +316,98 @@ export default function Projects() {
               <a href={selectedProject.pattern_url} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline">Show pattern</Button>
               </a>
-              <ActionIcon variant="outline" aria-label="Settings" onClick={() => {
+
+              <ActionIcon variant="outline" aria-label="Edit" onClick={() => {
                   openEditModal();
                   setEditedProject(selectedProject);
                 }}>
                 <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} />
               </ActionIcon>
+
               <Button onClick={handleAddProjectToClipboard} variant="filled">Add project to clipboard</Button>
+
+              <ActionIcon variant="filled" color="rgba(179, 0, 0, 0.78)" aria-label="Delete" onClick={() => openDeleteConfirmationModal(selectedProject)}>
+                <IconTrash style={{ width: '70%', height: '70%' }} stroke={1.5} />
+              </ActionIcon>
             </Group>
           
-          <Modal opened={editModalOpened} onClose={closeEditModal} title="Edit Project" centered>
+            <Modal opened={editModalOpened} onClose={closeEditModal} title="Edit Project" centered>
+            <div>
+              <form onSubmit={handleEditSubmit}>
+                {<div>
+                  <FileInput
+                    variant="filled"
+                    radius="md"
+                    label="Project image"
+                    description="Upload png or jpeg file"
+                    placeholder="project.jpg"
+                    accept="image/png,image/jpeg"
+                    value={editedProject ? editedProject.project_image : ''}
+                    onChange={(event) => handleFileChange(event)}
+                  />
+                  <Space h="sm" />
+                  <TextInput 
+                    value={editedProject ? editedProject.title : ''}
+                    required
+                    label="Title"
+                    placeholder="Project"
+                    onChange={(event) => setEditedProject({ ...editedProject, title: event.currentTarget.value })}
+                  />
+                  <Space h="sm" />
+                  <Textarea
+                    value={editedProject ? editedProject.description : ''}
+                    label="Description"
+                    placeholder="Describe your project"
+                    onChange={(event) => setEditedProject({ ...editedProject, description: event.currentTarget.value })}
+                  />
+                  <Space h="sm" />
+                  <FileInput
+                    variant="filled"
+                    radius="md"
+                    label="Pattern file"
+                    description="Upload png, jpeg or pdf file"
+                    placeholder="pattern.pdf"
+                    accept="image/png,image/jpeg,application/pdf"
+                    value={editedProject ? editedProject.pattern_url : ''}
+                    onChange={(event) => handlePatternChange(event)}
+                  />
+                  <Space h="lg" />
+                  <Switch
+                    checked={editedProject ? editedProject.is_public : false}
+                    defaultChecked
+                    label="Want to make your project public?"
+                    onChange={(event) => setEditedProject({ ...editedProject, is_public: event.currentTarget.checked })}
+                  />
+                  <Space h="sm" />
+                  <Button type="submit">
+                    Save changes
+                  </Button>
+                </div>}
+              </form>
+            </div>
+          </Modal>
+
+          <Modal opened={deleteConfirmationModal} onClose={closeDeleteModal} title="Confirm Deletion">
           <div>
-            <form onSubmit={handleEditSubmit}>
-              {<div>
-                <FileInput
-                  variant="filled"
-                  radius="md"
-                  label="Project image"
-                  description="Upload png or jpeg file"
-                  placeholder="project.jpg"
-                  accept="image/png,image/jpeg"
-                  value={editedProject ? editedProject.project_image : ''}
-                  onChange={(event) => handleFileChange(event)}
-                />
-                <Space h="sm" />
-                <TextInput 
-                  value={editedProject ? editedProject.title : ''}
-                  required
-                  label="Title"
-                  placeholder="Project"
-                  onChange={(event) => setEditedProject({ ...editedProject, title: event.currentTarget.value })}
-                />
-                <Space h="sm" />
-                <Textarea
-                  value={editedProject ? editedProject.description : ''}
-                  label="Description"
-                  placeholder="Describe your project"
-                  onChange={(event) => setEditedProject({ ...editedProject, description: event.currentTarget.value })}
-                />
-                <Space h="sm" />
-                <FileInput
-                  variant="filled"
-                  radius="md"
-                  label="Pattern file"
-                  description="Upload png, jpeg or pdf file"
-                  placeholder="pattern.pdf"
-                  accept="image/png,image/jpeg,application/pdf"
-                  value={editedProject ? editedProject.pattern_url : ''}
-                  onChange={(event) => handlePatternChange(event)}
-                />
-                <Space h="lg" />
-                <Switch
-                  checked={editedProject ? editedProject.is_public : false}
-                  defaultChecked
-                  label="Want to make your project public?"
-                  onChange={(event) => setEditedProject({ ...editedProject, is_public: event.currentTarget.checked })}
-                />
-                <Space h="sm" />
-                <Button type="submit">
-                  Save changes
-                </Button>
-              </div>}
-            </form>
+            <Title order={4}>Are you sure you want to delete this project?</Title>
+            <Space h="md" />
+            {projectToDelete && (
+              <div>
+                <Title order={5}>{projectToDelete.title}</Title>
+              </div>
+            )}
+            <Space h="xs" />
+            <Group justify="space-between">
+              <Button onClick={handleDeleteProject} variant="filled">
+                Yes, Delete
+              </Button>
+              <Button onClick={closeDeleteModal} variant="outline">
+                Cancel
+              </Button>
+            </Group>
           </div>
         </Modal>
+        
         </div>
         
 
