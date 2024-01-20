@@ -16,7 +16,7 @@ SECRET = "SECRET"
 
 class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
     reset_password_token_secret = SECRET
-    verification_token_secret = SECRET
+    verification_token_secret = SECRET    
     verification_token_lifetime_seconds = 604800
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
@@ -31,7 +31,7 @@ bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+    return JWTStrategy(secret=SECRET, lifetime_seconds=604800)
 
 
 auth_backend = AuthenticationBackend(

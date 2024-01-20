@@ -4,7 +4,7 @@ from beanie import Document
 
 
 class Project(Document):
-    user_id: str
+    author_id: str
     project_image: str
     title: str
     description: str
@@ -20,4 +20,5 @@ class CreateProject(BaseModel):
     pattern_url: str
     is_public: bool
     materials: List[str]
+
 

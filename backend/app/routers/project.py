@@ -17,7 +17,7 @@ project_router = APIRouter(
     response_model_by_alias=False
 )
 async def create_project(user=Depends(current_active_user), project: CreateProject = Body(...)):
-    project_db = Project(user_id=str(user.id), title=project.title, project_image=project.project_image,
+    project_db = Project(author_id=str(user.id), title=project.title, project_image=project.project_image,
                          description=project.description,
                          pattern_url=project.pattern_url, is_public=project.is_public,
                          materials=project.materials)
@@ -33,7 +33,7 @@ async def create_project(user=Depends(current_active_user), project: CreateProje
     status_code=status.HTTP_202_ACCEPTED
 )
 async def update_project(project_id: str, user=Depends(current_active_user), project: CreateProject = Body(...)):
-    current_project = await Project.find_one(Project.user_id == str(user.id),
+    current_project = await Project.find_one(Project.author_id == str(user.id),
                                              Project.id == PydanticObjectId(project_id))
     if current_project:
         current_project.title = project.title
@@ -52,29 +52,30 @@ async def update_project(project_id: str, user=Depends(current_active_user), pro
     status_code=status.HTTP_202_ACCEPTED
 )
 async def delete_project(project_id: str, user=Depends(current_active_user), project: CreateProject = Body(...)):
-    project = await Project.find_one(Project.user_id == str(user.id),
+    project = await Project.find_one(Project.author_id == str(user.id),
                                      Project.id == PydanticObjectId(project_id))
     if project:
         await project.delete()
 
     return None
 
-
 @project_router.get(
-    path="/{project_id}",
+    path="/",
     status_code=status.HTTP_200_OK
 )
-async def list_projects(user=Depends(current_active_user)):
-    projects_list = await Project.find(Project.user_id == str(user.id)).to_list()
+async def list_private_projects(user=Depends(current_active_user)):
+    projects_list = await Project.find(Project.author_id == str(user.id)).to_list()
 
     return projects_list
 
-
 @project_router.get(
-    path="/{public}",
+    path="/public",
     status_code=status.HTTP_200_OK
 )
 async def list_public_projects():
     public_projects = await Project.find(Project.is_public == True).to_list()
 
     return public_projects
+
+
+

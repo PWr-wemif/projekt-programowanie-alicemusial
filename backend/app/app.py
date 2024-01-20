@@ -9,12 +9,15 @@ from app.models.project import Project
 from app.routers.file import file_router
 from app.models.yarn import Yarn
 from app.routers.yarn import yarn_router
+from app.routers.userproject import user_project_router
+from app.models.userproject import UserProject
 
 app = FastAPI()
 
 app.include_router(file_router, tags=["image"])
 app.include_router(project_router, tags=["project"])
 app.include_router(yarn_router, tags=["yarn-stash"])
+app.include_router(user_project_router, tags=["user-project"])
 app.include_router(
     fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt", tags=["auth"]
 )
@@ -35,13 +38,11 @@ app.include_router(
     tags=["users"],
 )
 
-origins = [
-    "http://localhost:5174",
-]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,7 +56,8 @@ async def on_startup():
         document_models=[
             User,
             Project,
-            Yarn
+            Yarn,
+            UserProject
         ],
     )
 
@@ -63,10 +65,3 @@ async def on_startup():
 @app.get('/')
 def get_status():
     return {"message": ":)"}
-
-
-@app.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user)):
-    return {"message": f"Hello {user.email}!"}
-
-
