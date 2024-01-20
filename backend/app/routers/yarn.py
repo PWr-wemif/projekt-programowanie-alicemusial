@@ -5,7 +5,7 @@ from beanie import PydanticObjectId
 from typing import Optional
 
 yarn_router = APIRouter(
-    prefix="/yarn-stash"
+    prefix="/yarn_stash"
 )
 
 
@@ -61,7 +61,7 @@ async def delete_yarn(yarn_id: str, user=Depends(current_active_user), yarn: New
 
 
 @yarn_router.get(
-    path="/{yarn_id}",
+    path="/",
     status_code=status.HTTP_200_OK
 )
 async def list_yarn(user=Depends(current_active_user)):
