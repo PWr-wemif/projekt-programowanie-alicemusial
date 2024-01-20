@@ -57,13 +57,6 @@ const Profile = () => {
                     onClick={() => handleSelectStatus('Yarn Stash')}>
                     Yarn Stash
                 </Button>
-                <Button 
-                    variant={selectedStatus === 'Hook Stash' ? 'filled' : 'subtle'}
-                    size='md'
-                    radius='lg'
-                    onClick={() => handleSelectStatus('Hook Stash')}>
-                    Hook Stash
-                </Button>
 
             </Group>
             <Divider my="md" />
