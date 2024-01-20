@@ -61,8 +61,9 @@ export default function YarnStash() {
       console.log(values)
       const data = await addYarnStash(values.brand, values.blend, values.hook_size, values.weight, values.length, yarn_photo_url);
       console.log(data);
+      close();
     } catch (error) {
-      console.error('Create project failed', error);
+      console.error('Add yarn failed', error);
     }
     
   }

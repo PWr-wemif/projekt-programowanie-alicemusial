@@ -1,9 +1,9 @@
 import {Group, Button, Modal,  TextInput, FileInput, Textarea, Switch, Space, Grid, Image, Overlay, ActionIcon, Title, Text } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
-import { IconEye } from '@tabler/icons-react';
+import { IconEye, IconEdit} from '@tabler/icons-react';
 import { useEffect, useState } from "react";
 import { uploadFile } from "../api/file";
-import { createProject, getPrivateProjects } from "../api/project";
+import { createProject, getPrivateProjects, updateProjectData } from "../api/project";
 import { useForm } from "@mantine/form";
 import PrivateProjectsInfo from "./PrivateProjectsInfo";
 import { addUserProject } from "../api/userproject";
@@ -90,15 +90,13 @@ export default function Projects() {
         const respone = await uploadFile(patternFile);
         console.log('File uploaded successfully', respone);
         pattern_url = respone.file_url;
-      } else {
-        console.log('No file selected');
-        return;
       }
       
       try {
         console.log(values)
         const data = await createProject(values.title, project_image, values.description, pattern_url,values.is_public, values.materials);
         console.log(data);
+        close();
       } catch (error) {
         console.error('Create project failed', error);
       }
@@ -115,6 +113,25 @@ export default function Projects() {
         console.log('Project added successfully', response);
       } catch (error) {
         console.error('Error adding project to clipboard', error);
+      }
+    };
+
+    const [editModalOpened, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+    const [editedProject, setEditedProject] = useState(null);
+
+    const handleEditSubmit = async () => {
+      try {
+        const { title, description, is_public, materials } = editedProject;
+        const updatedValues = {
+          title,
+          description,
+          is_public,
+          materials,
+        };
+        await updateProjectData(editedProject._id, updatedValues);
+        closeEditModal();
+      } catch (error) {
+        console.error('Edit project failed', error);
       }
     };
 
@@ -258,7 +275,7 @@ export default function Projects() {
         <Modal radius="lg" opened={openedPrivateProjectInfo} onClose={closePrivateProjectInfo}>
         
         {privateProjects && selectedProject && (
-          <>
+          <div>
             <Title order={1}>{selectedProject.title}</Title>
             <Space h="md" />
             <Group justify="center">
@@ -272,9 +289,72 @@ export default function Projects() {
               <a href={selectedProject.pattern_url} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline">Show pattern</Button>
               </a>
+              <ActionIcon variant="outline" aria-label="Settings" onClick={() => {
+                  openEditModal();
+                  setEditedProject(selectedProject);
+                }}>
+                <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} />
+              </ActionIcon>
               <Button onClick={handleAddProjectToClipboard} variant="filled">Add project to clipboard</Button>
             </Group>
-          </>
+          
+          <Modal opened={editModalOpened} onClose={closeEditModal} title="Edit Project" centered>
+          <div>
+            <form onSubmit={handleEditSubmit}>
+              {<div>
+                <FileInput
+                  variant="filled"
+                  radius="md"
+                  label="Project image"
+                  description="Upload png or jpeg file"
+                  placeholder="project.jpg"
+                  accept="image/png,image/jpeg"
+                  value={editedProject ? editedProject.project_image : ''}
+                  onChange={(event) => handleFileChange(event)}
+                />
+                <Space h="sm" />
+                <TextInput 
+                  value={editedProject ? editedProject.title : ''}
+                  required
+                  label="Title"
+                  placeholder="Project"
+                  onChange={(event) => setEditedProject({ ...editedProject, title: event.currentTarget.value })}
+                />
+                <Space h="sm" />
+                <Textarea
+                  value={editedProject ? editedProject.description : ''}
+                  label="Description"
+                  placeholder="Describe your project"
+                  onChange={(event) => setEditedProject({ ...editedProject, description: event.currentTarget.value })}
+                />
+                <Space h="sm" />
+                <FileInput
+                  variant="filled"
+                  radius="md"
+                  label="Pattern file"
+                  description="Upload png, jpeg or pdf file"
+                  placeholder="pattern.pdf"
+                  accept="image/png,image/jpeg,application/pdf"
+                  value={editedProject ? editedProject.pattern_url : ''}
+                  onChange={(event) => handlePatternChange(event)}
+                />
+                <Space h="lg" />
+                <Switch
+                  checked={editedProject ? editedProject.is_public : false}
+                  defaultChecked
+                  label="Want to make your project public?"
+                  onChange={(event) => setEditedProject({ ...editedProject, is_public: event.currentTarget.checked })}
+                />
+                <Space h="sm" />
+                <Button type="submit">
+                  Save changes
+                </Button>
+              </div>}
+            </form>
+          </div>
+        </Modal>
+        </div>
+        
 
         )}
       </Modal>
