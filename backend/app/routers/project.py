@@ -51,7 +51,7 @@ async def update_project(project_id: str, user=Depends(current_active_user), pro
     response_model=Optional[Project],
     status_code=status.HTTP_202_ACCEPTED
 )
-async def delete_project(project_id: str, user=Depends(current_active_user), project: CreateProject = Body(...)):
+async def delete_project(project_id: str, user=Depends(current_active_user)):
     project = await Project.find_one(Project.author_id == str(user.id),
                                      Project.id == PydanticObjectId(project_id))
     if project:
