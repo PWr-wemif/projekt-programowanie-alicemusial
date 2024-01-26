@@ -50,18 +50,24 @@ async def get_user_projects(user=Depends(current_active_user)):
     user_projects = await UserProject.find(UserProject.user_id == str(user.id)).to_list()
     for user_project in user_projects:
         project = await Project.find_one(Project.id == PydanticObjectId(user_project.project_id))
-        user_project_response = UserProjectResponse(
-            id=user_project.id,
-            user_id=user_project.user_id,
-            project_id=user_project.project_id,
-            status=user_project.status,
-            title=project.title,
-            description=project.description,
-            project_image=project.project_image,
-            pattern_url=project.pattern_url,
-            is_public=project.is_public,
-            materials=project.materials
-        )
-        user_projects_response.append(user_project_response)
+
+        if project is not None:
+            user_project_response = UserProjectResponse(
+                id=user_project.id,
+                user_id=user_project.user_id,
+                project_id=user_project.project_id,
+                status=user_project.status,
+                title=project.title,
+                description=project.description,
+                project_image=project.project_image,
+                pattern_url=project.pattern_url,
+                is_public=project.is_public
+            )
+            user_projects_response.append(user_project_response)
+
+        else:
+            # Handle the case where the project is not found
+            # For example, you might log a message or set a default response
+            print(f"Project not found for user_project_id: {user_project.project_id}")
     
     return user_projects_response

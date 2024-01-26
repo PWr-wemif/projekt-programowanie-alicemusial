@@ -10,15 +10,19 @@ class Project(Document):
     description: str
     pattern_url: str
     is_public: bool
-    materials: List[str]
 
 
 class CreateProject(BaseModel):
     title: str
     project_image: str
     description: Optional[str]
-    pattern_url: str
+    pattern_url: Optional[str]
     is_public: bool
-    materials: List[str]
 
 
+class UpdateProject(BaseModel):
+    title: str | None = None
+    project_image: str | None = None
+    description: str | None = None
+    pattern_url: str | None = None
+    is_public: bool | None = None

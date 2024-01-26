@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body, status, Depends
-from app.models.project import Project, CreateProject
+from app.models.project import Project, CreateProject, UpdateProject
 from app.auth.user import current_active_user
 from beanie import PydanticObjectId
 from typing import Optional
@@ -19,8 +19,7 @@ project_router = APIRouter(
 async def create_project(user=Depends(current_active_user), project: CreateProject = Body(...)):
     project_db = Project(author_id=str(user.id), title=project.title, project_image=project.project_image,
                          description=project.description,
-                         pattern_url=project.pattern_url, is_public=project.is_public,
-                         materials=project.materials)
+                         pattern_url=project.pattern_url, is_public=project.is_public)
     new_project = await Project.insert_one(
         project_db
     )
@@ -32,19 +31,32 @@ async def create_project(user=Depends(current_active_user), project: CreateProje
     response_model=Optional[Project],
     status_code=status.HTTP_202_ACCEPTED
 )
-async def update_project(project_id: str, user=Depends(current_active_user), project: CreateProject = Body(...)):
-    current_project = await Project.find_one(Project.author_id == str(user.id),
-                                             Project.id == PydanticObjectId(project_id))
+async def update_project(
+    project_id: str,
+    project: UpdateProject,
+    user=Depends(current_active_user)
+):
+    current_project = await Project.find_one(
+        Project.author_id == str(user.id),
+        Project.id == PydanticObjectId(project_id)
+    )
+
     if current_project:
-        current_project.title = project.title
-        current_project.description = project.description
-        current_project.pattern_url = project.pattern_url
-        current_project.public = project.public
-        current_project.materials = project.materials
+        if project.title is not None:
+            current_project.title = project.title
+        if project.project_image is not None:
+            current_project.project_image = project.project_image
+        if project.description is not None:
+            current_project.description = project.description
+        if project.pattern_url is not None:
+            current_project.pattern_url = project.pattern_url
+        if project.is_public is not None:
+            current_project.is_public = project.is_public
+
         await current_project.save()
         return current_project
-    return None
 
+    return None
 
 @project_router.delete(
     path="/{project_id}",

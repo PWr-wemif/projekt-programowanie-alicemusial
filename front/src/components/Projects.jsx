@@ -120,13 +120,33 @@ export default function Projects() {
     const [editedProject, setEditedProject] = useState(null);
 
     const handleEditSubmit = async () => {
+      
+      if (projectImage) {
+        var project_image = ""
+        try {
+          const response = await uploadFile(projectImage);
+          console.log('File uploaded successfully', response);
+          project_image = response.file_url;
+        } catch (error) {
+          console.error('Upload error:', error);
+        }
+      }
+
+      var pattern_url = ""
+      if (patternFile) {
+        const respone = await uploadFile(patternFile);
+        console.log('File uploaded successfully', respone);
+        pattern_url = respone.file_url;
+      }
+
       try {
-        const { title, description, is_public, materials } = editedProject;
+        const { title, description, is_public } = editedProject;
         const updatedValues = {
+          ...(project_image && { project_image }),
+          ...(pattern_url && { pattern_url }),   
           title,
           description,
           is_public,
-          materials,
         };
         await updateProjectData(editedProject._id, updatedValues);
         closeEditModal();
@@ -342,7 +362,6 @@ export default function Projects() {
                     description="Upload png or jpeg file"
                     placeholder="project.jpg"
                     accept="image/png,image/jpeg"
-                    value={editedProject ? editedProject.project_image : ''}
                     onChange={(event) => handleFileChange(event)}
                   />
                   <Space h="sm" />
@@ -368,7 +387,6 @@ export default function Projects() {
                     description="Upload png, jpeg or pdf file"
                     placeholder="pattern.pdf"
                     accept="image/png,image/jpeg,application/pdf"
-                    value={editedProject ? editedProject.pattern_url : ''}
                     onChange={(event) => handlePatternChange(event)}
                   />
                   <Space h="lg" />

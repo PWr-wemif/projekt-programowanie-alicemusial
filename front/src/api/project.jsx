@@ -72,7 +72,7 @@ export const updateProjectData = async (_id, updatedValues) => {
         },
         body: JSON.stringify(updatedValues),
       });
-  
+      console.log(response)
       if (!response.ok) {
         throw new Error(`Server error: ${response.status} - ${response.statusText}`);
       }

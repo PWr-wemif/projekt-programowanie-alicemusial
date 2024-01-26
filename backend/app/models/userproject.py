@@ -18,7 +18,6 @@ class UserProjectResponse(BaseModel):
     project_image: str
     pattern_url: str
     is_public: bool
-    materials: List[str]
 
 
 class UpdateUserProjectStatus(BaseModel):
